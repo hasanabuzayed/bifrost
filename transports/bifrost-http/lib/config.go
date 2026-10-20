@@ -47,6 +47,7 @@ import (
 	plugins "github.com/maximhq/bifrost/framework/plugins"
 	"github.com/maximhq/bifrost/framework/vectorstore"
 	"github.com/maximhq/bifrost/plugins/compat"
+	"github.com/maximhq/bifrost/plugins/gliner"
 	"github.com/maximhq/bifrost/plugins/governance"
 	"github.com/maximhq/bifrost/plugins/logging"
 	"github.com/maximhq/bifrost/plugins/maxim"
@@ -139,6 +140,7 @@ var builtinPluginNames = []string{
 	logging.PluginName,
 	governance.PluginName,
 	otel.PluginName,
+	gliner.PluginName,
 	semanticcache.PluginName,
 	compat.PluginName,
 	maxim.PluginName,
