@@ -51,6 +51,7 @@ import (
 	"github.com/maximhq/bifrost/plugins/governance"
 	"github.com/maximhq/bifrost/plugins/logging"
 	"github.com/maximhq/bifrost/plugins/maxim"
+	"github.com/maximhq/bifrost/plugins/modelchain"
 	"github.com/maximhq/bifrost/plugins/otel"
 	"github.com/maximhq/bifrost/plugins/prompts"
 	"github.com/maximhq/bifrost/plugins/routing"
@@ -141,6 +142,7 @@ var builtinPluginNames = []string{
 	governance.PluginName,
 	otel.PluginName,
 	gliner.PluginName,
+	modelchain.PluginName,
 	semanticcache.PluginName,
 	compat.PluginName,
 	maxim.PluginName,

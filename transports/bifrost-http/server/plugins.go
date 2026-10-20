@@ -13,6 +13,7 @@ import (
 	"github.com/maximhq/bifrost/plugins/logging"
 	"github.com/maximhq/bifrost/plugins/maxim"
 	"github.com/maximhq/bifrost/plugins/modelcatalogresolver"
+	"github.com/maximhq/bifrost/plugins/modelchain"
 	"github.com/maximhq/bifrost/plugins/otel"
 	"github.com/maximhq/bifrost/plugins/prompts"
 	"github.com/maximhq/bifrost/plugins/routing"
@@ -187,6 +188,13 @@ func loadBuiltinPlugin(ctx context.Context, name string, pluginConfig any, bifro
 		}
 		return gliner.Init(glinerConfig, logger)
 
+	case modelchain.PluginName:
+		modelChainConfig, err := MarshalPluginConfig[modelchain.Config](pluginConfig)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal model-chain plugin config: %w", err)
+		}
+		return modelchain.Init(modelChainConfig)
+
 	case compat.PluginName:
 		compatConfig, err := MarshalPluginConfig[compat.Config](pluginConfig)
 		if err != nil {
@@ -326,6 +334,16 @@ func (s *BifrostHTTPServer) loadBuiltinPlugins(ctx context.Context) error {
 		s.markPluginDisabled(gliner.PluginName)
 	}
 	s.Config.SetPluginOrderInfo(gliner.PluginName, builtinPlacement, schemas.Ptr(11))
+
+	// 6b. Model chains (if configured in PluginConfigs). Order 12: after governance and routing,
+	// so its PreRequestHook has the last word on a chained model's provider and fallbacks.
+	modelChainPluginConfig := s.getPluginConfig(modelchain.PluginName)
+	if modelChainPluginConfig != nil && modelChainPluginConfig.Enabled {
+		s.registerPluginWithStatus(ctx, modelchain.PluginName, nil, modelChainPluginConfig.Config, false)
+	} else {
+		s.markPluginDisabled(modelchain.PluginName)
+	}
+	s.Config.SetPluginOrderInfo(modelchain.PluginName, builtinPlacement, schemas.Ptr(12))
 
 	// 7. Semantic Cache (if configured in PluginConfigs)
 	semanticCacheConfig := s.getPluginConfig(semanticcache.PluginName)
