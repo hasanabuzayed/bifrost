@@ -703,6 +703,9 @@
         "typesafe": {
           "$ref": "#/$defs/provider"
         },
+        "fastino": {
+          "$ref": "#/$defs/provider"
+        },
         "vllm": {
           "$ref": "#/$defs/provider_with_vllm_config"
         },
@@ -12817,7 +12820,8 @@
             "sarvam",
             "wafer",
             "cloudflare",
-            "typesafe"
+            "typesafe",
+            "fastino"
           ],
           "description": "Base provider type to extend"
         },
@@ -12885,6 +12889,9 @@
               "type": "boolean"
             },
             "decisions": {
+              "type": "boolean"
+            },
+            "extraction": {
               "type": "boolean"
             },
             "ocr": {

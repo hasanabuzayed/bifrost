@@ -423,6 +423,7 @@ type AllowedRequests struct {
 	Compaction            bool `json:"compaction"`
 	Embedding             bool `json:"embedding"`
 	Rerank                bool `json:"rerank"`
+	Extraction            bool `json:"extraction"`
 	Decision              bool `json:"decisions"`
 	OCR                   bool `json:"ocr"`
 	Speech                bool `json:"speech"`
@@ -512,6 +513,8 @@ func (ar *AllowedRequests) IsOperationAllowed(operation RequestType) bool {
 		return ar.Embedding
 	case RerankRequest:
 		return ar.Rerank
+	case ExtractionRequest:
+		return ar.Extraction
 	case DecisionRequest:
 		return ar.Decision
 	case OCRRequest:
@@ -815,6 +818,8 @@ type Provider interface {
 	Embedding(ctx *BifrostContext, key Key, request *BifrostEmbeddingRequest) (*BifrostEmbeddingResponse, *BifrostError)
 	// Rerank performs a rerank request to reorder documents by relevance to a query
 	Rerank(ctx *BifrostContext, key Key, request *BifrostRerankRequest) (*BifrostRerankResponse, *BifrostError)
+	// Extraction runs a GLiNER-style schema extraction (entities, classifications, structures, relations)
+	Extraction(ctx *BifrostContext, key Key, request *BifrostExtractionRequest) (*BifrostExtractionResponse, *BifrostError)
 	// Decision performs an decision request against an annotated function-tool definition (Typesafe-only; other providers return unsupported)
 	Decision(ctx *BifrostContext, key Key, request *BifrostDecisionRequest) (*BifrostDecisionResponse, *BifrostError)
 	// OCR performs an optical character recognition request on a document

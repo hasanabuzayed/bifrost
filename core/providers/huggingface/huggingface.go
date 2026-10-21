@@ -800,6 +800,11 @@ func (provider *HuggingFaceProvider) Rerank(ctx *schemas.BifrostContext, key sch
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, provider.GetProviderKey())
 }
 
+// Extraction is not supported by the HuggingFaceProvider provider.
+func (provider *HuggingFaceProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision is not supported by the HuggingFace provider.
 func (provider *HuggingFaceProvider) Decision(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostDecisionRequest) (*schemas.BifrostDecisionResponse, *schemas.BifrostError) {
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.DecisionRequest, provider.GetProviderKey())

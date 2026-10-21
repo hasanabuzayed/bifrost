@@ -319,6 +319,11 @@ func (provider *PerplexityProvider) Rerank(ctx *schemas.BifrostContext, key sche
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, provider.GetProviderKey())
 }
 
+// Extraction is not supported by the PerplexityProvider provider.
+func (provider *PerplexityProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision runs a decision on Perplexity's decider models (pplx-decider-*). The model is
 // sent as is; Perplexity rejects one it does not serve, and that error is passed through.
 // The body carries no id, so it is taken from the x-request-id header.

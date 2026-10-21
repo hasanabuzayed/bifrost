@@ -1218,6 +1218,8 @@ func (r *BifrostResponse) NormalizedUsage() *BifrostLLMUsage {
 		return r.EmbeddingResponse.Usage
 	case r.RerankResponse != nil && r.RerankResponse.Usage != nil:
 		return r.RerankResponse.Usage
+	case r.ExtractionResponse != nil && r.ExtractionResponse.Usage != nil:
+		return r.ExtractionResponse.Usage
 	case r.DecisionResponse != nil && r.DecisionResponse.Usage != nil:
 		return r.DecisionResponse.Usage
 	case r.TranscriptionResponse != nil && r.TranscriptionResponse.Usage != nil:

@@ -243,6 +243,11 @@ func (p *githubCopilotProvider) Rerank(ctx *schemas.BifrostContext, key schemas.
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, p.GetProviderKey())
 }
 
+// Extraction is not supported by the githubCopilotProvider provider.
+func (p *githubCopilotProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, p.GetProviderKey())
+}
+
 // Decision is not supported by the githubCopilot provider.
 func (p *githubCopilotProvider) Decision(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostDecisionRequest) (*schemas.BifrostDecisionResponse, *schemas.BifrostError) {
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.DecisionRequest, p.GetProviderKey())

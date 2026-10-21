@@ -491,6 +491,8 @@ func normalizeRequestType(reqType schemas.RequestType) string {
 		return "rerank"
 	case schemas.DecisionRequest:
 		return "decisions"
+	case schemas.ExtractionRequest:
+		return "extraction"
 	case schemas.SpeechRequest, schemas.SpeechStreamRequest:
 		return "audio_speech"
 	case schemas.TranscriptionRequest, schemas.TranscriptionStreamRequest:

@@ -2428,6 +2428,12 @@ func IsTypesafeModel(model string) bool {
 	return strings.HasPrefix(strings.TrimPrefix(strings.ToLower(model), "~"), "typesafe/")
 }
 
+// IsFastinoDecisionModel checks if the model is Fastino's GLiDE decision model ("fastino/GLiDE"),
+// served on /v1/systemone rather than chat. Any "glide" name matches, so new GLiDE versions work.
+func IsFastinoDecisionModel(model string) bool {
+	return strings.Contains(strings.ToLower(model), "glide")
+}
+
 // IsClefModel checks if the model is a Clef decision model on Cloudflare Workers AI,
 // by its bare name ("clef-flash") or Cloudflare's full ID ("@cf/cloudflare/clef-flash").
 // Any "clef" name matches, so new Clef variants work without a code change.

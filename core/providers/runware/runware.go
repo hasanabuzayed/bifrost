@@ -354,6 +354,11 @@ func (provider *RunwareProvider) Rerank(ctx *schemas.BifrostContext, key schemas
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, provider.GetProviderKey())
 }
 
+// Extraction is not supported by the RunwareProvider provider.
+func (provider *RunwareProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision is not supported by the Runware provider.
 func (provider *RunwareProvider) Decision(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostDecisionRequest) (*schemas.BifrostDecisionResponse, *schemas.BifrostError) {
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.DecisionRequest, provider.GetProviderKey())

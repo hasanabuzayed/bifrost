@@ -214,6 +214,11 @@ func (provider *WaferProvider) Rerank(ctx *schemas.BifrostContext, key schemas.K
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, provider.GetProviderKey())
 }
 
+// Extraction is not supported by the WaferProvider provider.
+func (provider *WaferProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision is not supported by the Wafer provider.
 func (provider *WaferProvider) Decision(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostDecisionRequest) (*schemas.BifrostDecisionResponse, *schemas.BifrostError) {
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.DecisionRequest, provider.GetProviderKey())

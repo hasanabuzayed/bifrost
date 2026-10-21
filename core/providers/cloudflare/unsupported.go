@@ -42,6 +42,11 @@ func (provider *CloudflareProvider) Rerank(ctx *schemas.BifrostContext, key sche
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, provider.GetProviderKey())
 }
 
+// Extraction is not supported by the CloudflareProvider provider.
+func (provider *CloudflareProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // OCR is not supported by the Cloudflare provider.
 func (provider *CloudflareProvider) OCR(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostOCRRequest) (*schemas.BifrostOCRResponse, *schemas.BifrostError) {
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.OCRRequest, provider.GetProviderKey())

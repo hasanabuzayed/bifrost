@@ -748,6 +748,11 @@ func (provider *AzureProvider) Rerank(ctx *schemas.BifrostContext, key schemas.K
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, provider.GetProviderKey())
 }
 
+// Extraction is not supported by the AzureProvider provider.
+func (provider *AzureProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // azureDecisionPath is where a Foundry resource serves Microsoft's decision models
 // (Microsoft-Decision-1). It takes no api-version.
 const azureDecisionPath = "/providers/microsoft/v1/systemone"

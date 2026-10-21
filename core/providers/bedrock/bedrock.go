@@ -2537,6 +2537,11 @@ func (provider *BedrockProvider) Rerank(ctx *schemas.BifrostContext, key schemas
 	return bifrostResponse, nil
 }
 
+// Extraction is not supported by the BedrockProvider provider.
+func (provider *BedrockProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision is not supported by the Bedrock provider.
 func (provider *BedrockProvider) Decision(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostDecisionRequest) (*schemas.BifrostDecisionResponse, *schemas.BifrostError) {
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.DecisionRequest, provider.GetProviderKey())

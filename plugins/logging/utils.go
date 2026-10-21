@@ -706,6 +706,17 @@ func (p *LoggerPlugin) extractInputHistory(request *schemas.BifrostRequest) ([]s
 			},
 		}, []schemas.ResponsesMessage{}
 	}
+	if request.ExtractionRequest != nil {
+		text := request.ExtractionRequest.Text
+		return []schemas.ChatMessage{
+			{
+				Role: schemas.ChatMessageRoleUser,
+				Content: &schemas.ChatMessageContent{
+					ContentStr: &text,
+				},
+			},
+		}, []schemas.ResponsesMessage{}
+	}
 	if request.CountTokensRequest != nil && len(request.CountTokensRequest.Input) > 0 {
 		return []schemas.ChatMessage{}, request.CountTokensRequest.Input
 	}

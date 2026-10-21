@@ -2089,6 +2089,11 @@ func (provider *VertexProvider) Rerank(ctx *schemas.BifrostContext, key schemas.
 	return bifrostResponse, nil
 }
 
+// Extraction is not supported by the VertexProvider provider.
+func (provider *VertexProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision is not supported by the Vertex provider.
 func (provider *VertexProvider) Decision(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostDecisionRequest) (*schemas.BifrostDecisionResponse, *schemas.BifrostError) {
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.DecisionRequest, provider.GetProviderKey())

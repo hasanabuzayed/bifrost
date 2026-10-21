@@ -2777,7 +2777,6 @@ func (s *BifrostHTTPServer) RegisterInferenceRoutes(ctx context.Context, middlew
 	handlers.NewLiveControlHandler(s.Client, s.Config).RegisterRoutes(s.Router, middlewares...)
 	inferenceHandler.RegisterRoutes(s.Router, middlewares...)
 	asyncHandler.RegisterRoutes(s.Router, middlewares...)
-	handlers.NewGlinerHandler(s.Config).RegisterRoutes(s.Router, middlewares...)
 	mcpInferenceHandler.RegisterRoutes(s.Router, middlewares...)
 	s.MCPServerHandler.RegisterRoutes(s.Router, middlewares...)
 	if s.AgentGatewayHandler != nil {

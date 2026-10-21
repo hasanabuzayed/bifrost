@@ -80,6 +80,7 @@ const (
 	Databricks    ModelProvider = "databricks"
 	Cloudflare    ModelProvider = "cloudflare"
 	Typesafe      ModelProvider = "typesafe"
+	Fastino       ModelProvider = "fastino"
 )
 
 // SupportedBaseProviders is the list of base providers allowed for custom providers.
@@ -92,6 +93,7 @@ var SupportedBaseProviders = []ModelProvider{
 	HuggingFace,
 	Replicate,
 	Typesafe,
+	Fastino,
 }
 
 // StandardProviders is the list of all built-in (non-custom) providers.
@@ -130,6 +132,7 @@ var StandardProviders = []ModelProvider{
 	Databricks,
 	Cloudflare,
 	Typesafe,
+	Fastino,
 }
 
 // RequestType represents the type of request being made to a provider.
@@ -198,6 +201,7 @@ const (
 	ContainerFileContentRequest    RequestType = "container_file_content"
 	ContainerFileDeleteRequest     RequestType = "container_file_delete"
 	RerankRequest                  RequestType = "rerank"
+	ExtractionRequest              RequestType = "extraction"
 	DecisionRequest                RequestType = "decisions"
 	OCRRequest                     RequestType = "ocr"
 	CountTokensRequest             RequestType = "count_tokens"
@@ -797,6 +801,7 @@ type Fallback struct {
 // - CountTokensRequest
 // - EmbeddingRequest
 // - RerankRequest
+// - ExtractionRequest
 // - SpeechRequest
 // - TranscriptionRequest
 // - ImageGenerationRequest
@@ -817,6 +822,7 @@ type BifrostRequest struct {
 	CompactionRequest            *BifrostCompactionRequest
 	EmbeddingRequest             *BifrostEmbeddingRequest
 	RerankRequest                *BifrostRerankRequest
+	ExtractionRequest            *BifrostExtractionRequest
 	DecisionRequest              *BifrostDecisionRequest
 	OCRRequest                   *BifrostOCRRequest
 	SpeechRequest                *BifrostSpeechRequest
@@ -889,6 +895,8 @@ func (br *BifrostRequest) GetRequestFields() (provider ModelProvider, model stri
 		return br.EmbeddingRequest.Provider, br.EmbeddingRequest.Model, br.EmbeddingRequest.Fallbacks
 	case br.RerankRequest != nil:
 		return br.RerankRequest.Provider, br.RerankRequest.Model, br.RerankRequest.Fallbacks
+	case br.ExtractionRequest != nil:
+		return br.ExtractionRequest.Provider, br.ExtractionRequest.Model, br.ExtractionRequest.Fallbacks
 	case br.DecisionRequest != nil:
 		return br.DecisionRequest.Provider, br.DecisionRequest.Model, br.DecisionRequest.Fallbacks
 	case br.OCRRequest != nil:
@@ -1049,6 +1057,8 @@ func (br *BifrostRequest) SetProvider(provider ModelProvider) {
 		br.EmbeddingRequest.Provider = provider
 	case br.RerankRequest != nil:
 		br.RerankRequest.Provider = provider
+	case br.ExtractionRequest != nil:
+		br.ExtractionRequest.Provider = provider
 	case br.DecisionRequest != nil:
 		br.DecisionRequest.Provider = provider
 	case br.OCRRequest != nil:
@@ -1109,6 +1119,8 @@ func (br *BifrostRequest) SetModel(model string) {
 		br.EmbeddingRequest.Model = model
 	case br.RerankRequest != nil:
 		br.RerankRequest.Model = model
+	case br.ExtractionRequest != nil:
+		br.ExtractionRequest.Model = model
 	case br.DecisionRequest != nil:
 		br.DecisionRequest.Model = model
 	case br.OCRRequest != nil:
@@ -1169,6 +1181,8 @@ func (br *BifrostRequest) SetFallbacks(fallbacks []Fallback) {
 		br.EmbeddingRequest.Fallbacks = fallbacks
 	case br.RerankRequest != nil:
 		br.RerankRequest.Fallbacks = fallbacks
+	case br.ExtractionRequest != nil:
+		br.ExtractionRequest.Fallbacks = fallbacks
 	case br.DecisionRequest != nil:
 		br.DecisionRequest.Fallbacks = fallbacks
 	case br.OCRRequest != nil:
@@ -1215,6 +1229,8 @@ func (br *BifrostRequest) SetRawRequestBody(rawRequestBody []byte) {
 		br.EmbeddingRequest.RawRequestBody = rawRequestBody
 	case br.RerankRequest != nil:
 		br.RerankRequest.RawRequestBody = rawRequestBody
+	case br.ExtractionRequest != nil:
+		br.ExtractionRequest.RawRequestBody = rawRequestBody
 	case br.DecisionRequest != nil:
 		br.DecisionRequest.RawRequestBody = rawRequestBody
 	case br.OCRRequest != nil:
@@ -1395,6 +1411,7 @@ type BifrostResponse struct {
 	CompactionResponse            *BifrostCompactionResponse
 	EmbeddingResponse             *BifrostEmbeddingResponse
 	RerankResponse                *BifrostRerankResponse
+	ExtractionResponse            *BifrostExtractionResponse
 	DecisionResponse              *BifrostDecisionResponse
 	OCRResponse                   *BifrostOCRResponse
 	SpeechResponse                *BifrostSpeechResponse
@@ -1464,6 +1481,8 @@ func (r *BifrostResponse) GetExtraFields() *BifrostResponseExtraFields {
 		return &r.EmbeddingResponse.ExtraFields
 	case r.RerankResponse != nil:
 		return &r.RerankResponse.ExtraFields
+	case r.ExtractionResponse != nil:
+		return &r.ExtractionResponse.ExtraFields
 	case r.DecisionResponse != nil:
 		return &r.DecisionResponse.ExtraFields
 	case r.OCRResponse != nil:
@@ -1705,6 +1724,8 @@ func (r *BifrostResponse) PopulateExtraFields(requestType RequestType, provider 
 		setCoreExtraFields(&r.EmbeddingResponse.ExtraFields, requestType, provider, originalModelRequested, resolvedModel)
 	case r.RerankResponse != nil:
 		setCoreExtraFields(&r.RerankResponse.ExtraFields, requestType, provider, originalModelRequested, resolvedModel)
+	case r.ExtractionResponse != nil:
+		setCoreExtraFields(&r.ExtractionResponse.ExtraFields, requestType, provider, originalModelRequested, resolvedModel)
 	case r.DecisionResponse != nil:
 		setCoreExtraFields(&r.DecisionResponse.ExtraFields, requestType, provider, originalModelRequested, resolvedModel)
 	case r.SpeechResponse != nil:

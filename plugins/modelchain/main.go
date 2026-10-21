@@ -3,7 +3,7 @@
 // A caller that cannot send Bifrost fallbacks (Gorse posts one Jina-style /v1/rerank body, n8n
 // posts TypeSafe System One bodies) names a logical model, say "gorse-rerank". The plugin:
 //
-//   - PreRequestHook (rerank and decision requests): sets the first chain entry as the
+//   - PreRequestHook (rerank, decision and extraction requests): sets the first chain entry as the
 //     provider/model and the rest as explicit fallbacks, so Bifrost tries them in order (its own
 //     key-weight fallbacks pick the first provider at random). Each attempt still runs
 //     governance, so per-model rate limits in governance.model_configs work as caps per tier.
@@ -81,7 +81,7 @@ func (p *ModelChainPlugin) chainFor(provider schemas.ModelProvider, model string
 
 // PreRequestHook routes a logical rerank or decision model through its chain.
 func (p *ModelChainPlugin) PreRequestHook(_ *schemas.BifrostContext, req *schemas.BifrostRequest) error {
-	if req == nil || (req.RequestType != schemas.RerankRequest && req.RequestType != schemas.DecisionRequest) {
+	if req == nil || (req.RequestType != schemas.RerankRequest && req.RequestType != schemas.DecisionRequest && req.RequestType != schemas.ExtractionRequest) {
 		return nil
 	}
 	provider, model, _ := req.GetRequestFields()

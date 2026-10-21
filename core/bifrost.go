@@ -4,6 +4,7 @@
 package bifrost
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -48,6 +49,7 @@ import (
 	"github.com/maximhq/bifrost/core/providers/runway"
 	"github.com/maximhq/bifrost/core/providers/sarvam"
 	"github.com/maximhq/bifrost/core/providers/sgl"
+	"github.com/maximhq/bifrost/core/providers/fastino"
 	"github.com/maximhq/bifrost/core/providers/typesafe"
 	providerUtils "github.com/maximhq/bifrost/core/providers/utils"
 	"github.com/maximhq/bifrost/core/providers/vertex"
@@ -1649,6 +1651,44 @@ func (bifrost *Bifrost) RerankRequest(ctx *schemas.BifrostContext, req *schemas.
 		return nil, err
 	}
 	return response.RerankResponse, nil
+}
+
+// ExtractionRequest sends a GLiNER-style schema extraction request to the specified provider.
+func (bifrost *Bifrost) ExtractionRequest(ctx *schemas.BifrostContext, req *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	if req == nil {
+		return nil, &schemas.BifrostError{
+			IsBifrostError: false,
+			Error:          &schemas.ErrorField{Message: "extraction request is nil"},
+			ExtraFields:    schemas.BifrostErrorExtraFields{RequestType: schemas.ExtractionRequest},
+		}
+	}
+	invalid := func(message string) *schemas.BifrostError {
+		return &schemas.BifrostError{
+			IsBifrostError: false,
+			Error:          &schemas.ErrorField{Message: message},
+			ExtraFields: schemas.BifrostErrorExtraFields{
+				RequestType:            schemas.ExtractionRequest,
+				Provider:               req.Provider,
+				OriginalModelRequested: req.Model,
+				ResolvedModelUsed:      req.Model,
+			},
+		}
+	}
+	if strings.TrimSpace(req.Text) == "" {
+		return nil, invalid("text not provided for extraction request")
+	}
+	if trimmed := bytes.TrimSpace(req.Schema); len(trimmed) == 0 || trimmed[0] != '{' {
+		return nil, invalid("schema must be an object with entities, classifications, structures or relations")
+	}
+	bifrostReq := bifrost.getBifrostRequest()
+	bifrostReq.RequestType = schemas.ExtractionRequest
+	bifrostReq.ExtractionRequest = req
+
+	response, err := bifrost.handleRequest(ctx, bifrostReq)
+	if err != nil {
+		return nil, err
+	}
+	return response.ExtractionResponse, nil
 }
 
 // DecisionRequest sends an decision request to the specified provider.
@@ -5060,6 +5100,8 @@ func (bifrost *Bifrost) createBaseProvider(providerKey schemas.ModelProvider, co
 		return databricks.NewDatabricksProvider(config, bifrost.logger)
 	case schemas.Typesafe:
 		return typesafe.NewTypesafeProvider(config, bifrost.logger)
+	case schemas.Fastino:
+		return fastino.NewFastinoProvider(config, bifrost.logger)
 	default:
 		return nil, fmt.Errorf("unsupported provider: %s", targetProviderKey)
 	}
@@ -5702,6 +5744,12 @@ func (bifrost *Bifrost) prepareFallbackRequest(req *schemas.BifrostRequest, fall
 		tmp.Provider = fallback.Provider
 		tmp.Model = fallback.Model
 		fallbackReq.RerankRequest = &tmp
+	}
+	if req.ExtractionRequest != nil {
+		tmp := *req.ExtractionRequest
+		tmp.Provider = fallback.Provider
+		tmp.Model = fallback.Model
+		fallbackReq.ExtractionRequest = &tmp
 	}
 	if req.DecisionRequest != nil {
 		tmp := *req.DecisionRequest
@@ -9131,6 +9179,12 @@ func (bifrost *Bifrost) handleProviderRequest(provider schemas.Provider, config 
 			return nil, bifrostError
 		}
 		response.RerankResponse = rerankResponse
+	case schemas.ExtractionRequest:
+		extractionResponse, bifrostError := provider.Extraction(req.Context, key, req.BifrostRequest.ExtractionRequest)
+		if bifrostError != nil {
+			return nil, bifrostError
+		}
+		response.ExtractionResponse = extractionResponse
 	case schemas.DecisionRequest:
 		var decisionResponse *schemas.BifrostDecisionResponse
 		var bifrostError *schemas.BifrostError
@@ -10513,6 +10567,7 @@ func resetBifrostRequest(req *schemas.BifrostRequest) {
 	req.CompactionRequest = nil
 	req.EmbeddingRequest = nil
 	req.RerankRequest = nil
+	req.ExtractionRequest = nil
 	req.DecisionRequest = nil
 	req.OCRRequest = nil
 	req.SpeechRequest = nil

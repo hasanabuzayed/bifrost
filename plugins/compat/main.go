@@ -296,7 +296,7 @@ func (p *CompatPlugin) markForConversion(ctx *schemas.BifrostContext, provider s
 // serving a decisions model (on the Typesafe base, or gpt-6-luna on the OpenAI
 // base) would be emulated; the docs ask users to leave the setting off for them.
 func (p *CompatPlugin) markDecisionForEmulation(ctx *schemas.BifrostContext, provider schemas.ModelProvider, model string) {
-	if provider == schemas.Typesafe {
+	if provider == schemas.Typesafe || (provider == schemas.Fastino && schemas.IsFastinoDecisionModel(model)) {
 		return
 	}
 	fallback := (provider == schemas.OpenAI && schemas.DefaultSupportsDecisions(model)) || schemas.IsTypesafeModel(model) ||

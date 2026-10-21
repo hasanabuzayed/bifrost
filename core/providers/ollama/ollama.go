@@ -312,6 +312,11 @@ func (provider *OllamaProvider) Rerank(ctx *schemas.BifrostContext, key schemas.
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, provider.GetProviderKey())
 }
 
+// Extraction is not supported by the OllamaProvider provider.
+func (provider *OllamaProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision answers a decision request on a local System One model (nimble,
 // tev1, clef, clef-flash, laya) through Ollama's /v1/systemone. Every model is
 // sent, and one that cannot score decisions, or is not pulled, comes back as

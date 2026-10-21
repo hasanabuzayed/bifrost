@@ -1168,10 +1168,13 @@ func toPricingOverrideSummary(o modelcatalog.PricingOverride) ModelPricingOverri
 func (h *ProviderHandler) supportsDecisions(provider schemas.ModelProvider, model string) bool {
 	if custom := h.customProviderConfig(provider); custom != nil {
 		return custom.IsOperationAllowed(schemas.DecisionRequest) &&
-			(custom.BaseProviderType == schemas.Typesafe || custom.BaseProviderType == schemas.OpenAI)
+			(custom.BaseProviderType == schemas.Typesafe || custom.BaseProviderType == schemas.OpenAI || custom.BaseProviderType == schemas.Fastino)
 	}
 	if provider == schemas.Typesafe {
 		return true
+	}
+	if provider == schemas.Fastino {
+		return schemas.IsFastinoDecisionModel(model)
 	}
 	listed := model
 	model = h.aliasTarget(provider, model)

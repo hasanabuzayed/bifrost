@@ -488,6 +488,11 @@ func (provider *OpenRouterProvider) Rerank(ctx *schemas.BifrostContext, key sche
 	return nil, providerUtils.NewUnsupportedOperationError(schemas.RerankRequest, provider.GetProviderKey())
 }
 
+// Extraction is not supported by the OpenRouterProvider provider.
+func (provider *OpenRouterProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision answers a decision request on OpenRouter's native decisions
 // endpoint. OpenRouter decides which models it serves there, so every model is
 // sent, and one it does not serve, such as a chat model, comes back as

@@ -822,6 +822,8 @@ var PathToTypeMapping = map[string]schemas.RequestType{
 	"/v1/responses":              schemas.ResponsesRequest,
 	"/v1/embeddings":             schemas.EmbeddingRequest,
 	"/v1/rerank":                 schemas.RerankRequest,
+	"/v1/extract":                schemas.ExtractionRequest,
+	"/v1/extract/compare":        schemas.ExtractionRequest,
 	"/v1/decisions":              schemas.DecisionRequest,
 	"/v1/ocr":                    schemas.OCRRequest,
 	"/v1/audio/speech":           schemas.SpeechRequest,
@@ -881,6 +883,8 @@ func (h *CompletionHandler) RegisterRoutes(r *router.Router, middlewares ...sche
 	r.GET("/v1/responses/{response_id}/input_items", lib.ChainMiddlewares(h.responsesInputItems, responsesInputItemsMW...))
 	r.POST("/v1/embeddings", lib.ChainMiddlewares(h.embeddings, baseMiddlewares...))
 	r.POST("/v1/rerank", lib.ChainMiddlewares(h.rerank, baseMiddlewares...))
+	r.POST("/v1/extract", lib.ChainMiddlewares(h.extraction, baseMiddlewares...))
+	r.POST("/v1/extract/compare", lib.ChainMiddlewares(h.extractionCompare, baseMiddlewares...))
 	r.POST("/v1/decisions", lib.ChainMiddlewares(h.evaluation, baseMiddlewares...))
 	r.POST("/v1/ocr", lib.ChainMiddlewares(h.ocr, baseMiddlewares...))
 	// ElevenLabs sound-effect models also flow through /v1/audio/speech; the

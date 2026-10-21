@@ -8,7 +8,6 @@ import (
 
 	"github.com/maximhq/bifrost/core/schemas"
 	"github.com/maximhq/bifrost/plugins/compat"
-	"github.com/maximhq/bifrost/plugins/gliner"
 	"github.com/maximhq/bifrost/plugins/governance"
 	"github.com/maximhq/bifrost/plugins/logging"
 	"github.com/maximhq/bifrost/plugins/maxim"
@@ -181,13 +180,6 @@ func loadBuiltinPlugin(ctx context.Context, name string, pluginConfig any, bifro
 		}
 		return otel.Init(ctx, otelConfig, logger, bifrostConfig.ModelCatalog, handlers.GetVersion())
 
-	case gliner.PluginName:
-		glinerConfig, err := MarshalPluginConfig[gliner.Config](pluginConfig)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal gliner plugin config: %w", err)
-		}
-		return gliner.Init(glinerConfig, logger)
-
 	case modelchain.PluginName:
 		modelChainConfig, err := MarshalPluginConfig[modelchain.Config](pluginConfig)
 		if err != nil {
@@ -325,15 +317,6 @@ func (s *BifrostHTTPServer) loadBuiltinPlugins(ctx context.Context) error {
 		s.markPluginDisabled(otel.PluginName)
 	}
 	s.Config.SetPluginOrderInfo(otel.PluginName, builtinPlacement, schemas.Ptr(6))
-
-	// 6a. GLiNER NER routes (if configured in PluginConfigs). Order 11 keeps it unique and after governance.
-	glinerConfig := s.getPluginConfig(gliner.PluginName)
-	if glinerConfig != nil && glinerConfig.Enabled {
-		s.registerPluginWithStatus(ctx, gliner.PluginName, nil, glinerConfig.Config, false)
-	} else {
-		s.markPluginDisabled(gliner.PluginName)
-	}
-	s.Config.SetPluginOrderInfo(gliner.PluginName, builtinPlacement, schemas.Ptr(11))
 
 	// 6b. Model chains (if configured in PluginConfigs). Order 12: after governance and routing,
 	// so its PreRequestHook has the last word on a chained model's provider and fallbacks.

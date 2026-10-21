@@ -4354,6 +4354,11 @@ func (provider *OpenAIProvider) Rerank(ctx *schemas.BifrostContext, key schemas.
 	)
 }
 
+// Extraction is not supported by the OpenAIProvider provider.
+func (provider *OpenAIProvider) Extraction(ctx *schemas.BifrostContext, key schemas.Key, request *schemas.BifrostExtractionRequest) (*schemas.BifrostExtractionResponse, *schemas.BifrostError) {
+	return nil, providerUtils.NewUnsupportedOperationError(schemas.ExtractionRequest, provider.GetProviderKey())
+}
+
 // Decision answers a decision request on OpenAI's POST /v1/decisions when the
 // model is served there: the datasheet's supports_decisions row decides, and
 // with no row a known decisions family (DefaultSupportsDecisions, such as

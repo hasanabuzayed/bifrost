@@ -3637,6 +3637,8 @@ func (p *LoggerPlugin) captureRequestInput(ctx *schemas.BifrostContext, req *sch
 		initialData.Params = req.RerankRequest.Params
 	case schemas.DecisionRequest:
 		initialData.Params = req.DecisionRequest.Questions
+	case schemas.ExtractionRequest:
+		initialData.Params = map[string]interface{}{"schema": req.ExtractionRequest.Schema, "params": req.ExtractionRequest.Params}
 	case schemas.OCRRequest:
 		initialData.Params = req.OCRRequest.Params
 		initialData.OCRInput = &req.OCRRequest.Document
