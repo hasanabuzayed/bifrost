@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/bytedance/sonic"
+	"github.com/google/uuid"
 	"github.com/maximhq/bifrost/core/schemas"
 	"github.com/maximhq/bifrost/transports/v2/bifrost-http/lib"
 	"github.com/valyala/fasthttp"
@@ -117,6 +118,14 @@ func (h *CompletionHandler) extractionCompare(ctx *fasthttp.RequestCtx) {
 		SendError(ctx, fasthttp.StatusBadRequest, "targets needs at least two entries, e.g. [\"fastino/fastino/gliner2.5-base-v1\", \"gliner-local/gliner2.5-base-v1\"]")
 		return
 	}
+	// The transport keeps one context per HTTP request, so each target runs in a child of it with
+	// its own request ID (one log row each) and billing nonce (governance counts every call).
+	bifrostCtx, cancel := lib.ConvertToBifrostContext(ctx, h.config)
+	defer cancel()
+	if bifrostCtx == nil {
+		SendError(ctx, fasthttp.StatusBadRequest, "Failed to convert context")
+		return
+	}
 	out := ExtractionCompareResponse{Results: make([]ExtractionCompareResult, 0, len(req.Targets))}
 	for _, target := range req.Targets {
 		row := ExtractionCompareResult{Target: target}
@@ -128,15 +137,12 @@ func (h *CompletionHandler) extractionCompare(ctx *fasthttp.RequestCtx) {
 		}
 		one := *bifrostReq
 		one.Provider, one.Model, one.Fallbacks = provider, model, nil
-		bifrostCtx, cancel := lib.ConvertToBifrostContext(ctx, h.config)
-		if bifrostCtx == nil {
-			cancel()
-			SendError(ctx, fasthttp.StatusBadRequest, "Failed to convert context")
-			return
-		}
+		child := schemas.NewBifrostContext(bifrostCtx, schemas.NoDeadline)
+		child.SetValue(schemas.BifrostContextKeyRequestID, uuid.New().String())
+		child.SetValue(schemas.BifrostContextKeyBillingNonce, uuid.New().String())
 		start := time.Now()
-		resp, bifrostErr := h.client.ExtractionRequest(bifrostCtx, &one)
-		cancel()
+		resp, bifrostErr := h.client.ExtractionRequest(child, &one)
+		child.Cancel()
 		row.LatencyMs = time.Since(start).Milliseconds()
 		switch {
 		case bifrostErr != nil:
